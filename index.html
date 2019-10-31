@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Map</title>
+    <title>Taxi Stands</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <style>
@@ -16,22 +16,55 @@
     </style>
   </head>
   <body>
-    <div id="map" style="height: 500px; width: 80%; margin: 2rem auto 0;"></div>
+    <div id="map" style="height: 500px; width: 50%; margin: 2rem auto 0;"></div>
 
 
     <!-- jquery読み込み -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- google map api -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2Yjx1ZnXgIfD1MTLjJNT9PD-GEjwtuFY"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2Yjx1ZnXgIfD1MTLjJNT9PD-GEjwtuFY&libraries=places"></script>
     <!-- js -->
     <script type="text/javascript">
-      var map = new google.maps.Map(document.getElementById('map'), {
-        center: {
-          lat: 35.665361, //緯度を設定
-          lng: 139.761028 //経度を設定
-        },
-        zoom: 16 //地図のズームを設定
-      });
+      var map;
+      var service;
+      var infowindow;
+      initialize()
+      function initialize() {
+        // 位置座標のインスタンスを作成する
+        var pyrmont = new google.maps.LatLng(35.665361,139.761028);
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: pyrmont,
+            zoom: 16
+          });
+        
+       //指定位置の半径1600m内のタクシー乗り場を検索
+        var request = {
+          location: pyrmont,
+          radius: '1600',
+          type: ['taxi_stand']　 // https://developers.google.com/places/supported_types 参照
+        };
+        service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, callback);
+      }
+      function createMarker(latlng, icn)
+      {
+        // マーカー作成　　https://developers.google.com/maps/documentation/javascript/examples/marker-simple　参照
+        var marker = new google.maps.Marker({
+          position: latlng,
+          map: map,
+         
+        });
+      }
+      function callback(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            var place = results[i];
+            latlng = place.geometry.location;
+            icn = place.icon;
+            createMarker(latlng, icn);
+          }
+        }
+      }
     </script>
   </body>
 </html>

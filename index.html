@@ -73,6 +73,18 @@ function Result_Places(results, status){
 		}
 	}
 }
+	// 該当する位置にマーカーを表示
+function createMarker(options) {
+    //console.log(options);
+    var marker = new google.maps.Marker(options);
+    var infoWnd = new google.maps.InfoWindow();
+    infoWnd.setContent(options.text);
+    google.maps.event.addListener(marker, 'click', function(){
+        infoWnd.open(myMap, marker);
+    });
+    return marker;
+}
+ 
 // ページ読み込み完了後、Googleマップを表示
 google.maps.event.addDomListener(window, 'load', initialize);
 </script>
